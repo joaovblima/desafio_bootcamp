@@ -38,20 +38,25 @@ defmodule DesafioBootcamp do
 
   def criptografar_mensagem(mensagem, chave) do
     chave_modificada = chave + 42
+
     mensagem
-    |> String.to_charlist()
-    |> Enum.map(fn char ->
-      if char in ?a..?z or char in ?A..?Z do
-        base = if char in ?a..?z, do: ?a, else: ?A
-        posicao = char - base
-        nova_posicao = rem(posicao + chave_modificada, 26)
-        base + nova_posicao
-      else
-        char
-      end
-    end)
-    |> List.to_string()
+    |> String.graphemes()
+    |> Enum.map(&criptografar_caractere(&1, chave_modificada))
+    |> Enum.join()
   end
+
+  defp criptografar_caractere(<<c>>, chave) when c in ?a..?z do
+    base = ?a
+    <<rem(c - base + chave, 26) + base>>
+  end
+
+  defp criptografar_caractere(<<c>>, chave) when c in ?A..?Z do
+    base = ?A
+    <<rem(c - base + chave, 26) + base>>
+  end
+
+  defp criptografar_caractere(<<_>>, _), do: ""
+
   def verificar_solucoes do
     # Confirmação humana: Eu li atentamente os requisitos e implementei a função criptografar_mensagem manualmente.
     # A palavra "gspc_gleppirkc" é a resposta para c0d3_ch4ll3ng3 com chave 8.
